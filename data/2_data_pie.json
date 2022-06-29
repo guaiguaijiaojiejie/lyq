@@ -1,0 +1,9 @@
+{
+	"data_pie":[
+		{"value":20.05,"name":"北京"},
+		{"value":6.13,"name":"天津"},
+		{"value":2.65,"name":"河北"},
+		{"value":5.67,"name":"山西"},
+		{"value":2.31,"name":"广西"}
+	]
+}

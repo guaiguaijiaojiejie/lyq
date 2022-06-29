@@ -1,0 +1,19 @@
+{
+	"data":
+	[
+		{"sex":"男","value":296462,"specName":"北京"},
+		{"sex":"女","value":251465,"specName":"北京"},
+
+		{"sex":"男","value":97676,"specName":"天津"},
+		{"sex":"女","value":64905,"specName":"天津"},
+
+		{"sex":"男","value":682847,"specName":"河北"},
+		{"sex":"女","value":389872,"specName":"河北"},
+
+		{"sex":"男","value":648006,"specName":"山西"},
+		{"sex":"女","value":394443,"specName":"山西"},
+
+		{"sex":"男","value":392607,"specName":"广西"},
+		{"sex":"女","value":229394,"specName":"广西"}
+	]
+}

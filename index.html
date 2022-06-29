@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <!--引入ECharts脚本-->
+    <script src="js/echarts.js"></script>
+    <script src="./js/echart3.js"></script>
+    <script type="text/javascript" src="js/echarts-wordcloud.js"></script>
+    <script src="js/jquery-3.3.1.js"></script>
+</head>
+<style>
+    #main {
+        border: 1px pink solid;
+        font-size: 100px;
+        text-align: center;
+    }
+</style>
+g
+
+<body>
+    <!---为ECharts准备具备大小（宽高）的DOM-->
+
+    <div id="main" style="position:absolute; top:50px;left:10px; background-color:pink;
+    width:1838px;height:15%;">2010年人口普查</div>
+    <div id="main1" style="position:absolute; top:180px;left:10px; background-color:pink;
+    width:750px;height:400px;"></div>
+    <div id="main2" style="position:absolute; top:180px;left:730px; background-color:pink;
+    width:650px;height:400px;"></div>
+    <div id="main3" style="position:absolute; top:180px;left:1350px;right:10px; background-color:pink;
+     width:500px;height:400px;"></div>
+    </div>
+    <div id="main4" style="position:absolute; top:550px;left:10px; background-color:pink;
+    width:750px;height:400px;"></div>
+    <div id="main5" style="position:absolute; top:550px;left:730px; background-color:pink;
+    width:650px;height:400px;"></div>
+    <div id="main6" style="position:absolute; top:550px;left:1350px;right:10px; background-color:pink;
+     width:500px;height:400px;"></div>
+    </div>
+    <script type="text/javascript">
+        //基于准备好的DOM，初始化ECharts图表
+
+        var myChart1 = echarts.init(document.getElementById("main1"));
+        myChart1.setOption({
+            color: ['Purple', 'LimeGreen'],
+            backgroundColor: 'pink',
+            title: {
+                text: '部分地区非农业户口性别分布',
+                subtext: '',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'axis'
+            },
+            legend: {
+                //orient: 'vertical', 
+                left: 62, //图例左边距
+                top: 8,
+                data: ['男', '女'],
+
+
+            }, //图例顶边距
+            toolbox: {
+                show: true,
+                top: 8,
+                left: 530,
+                feature: {
+                    mark: {
+                        show: true
+                    },
+                    dataView: {
+                        show: true,
+                        readOnly: false
+                    },
+                    magicType: {
+                        show: true,
+                        type: ['line', 'bar']
+                    },
+                    restore: {
+                        show: true
+                    },
+                    saveAsImage: {
+                        show: true
+                    }
+                },
+            },
+            calculable: true,
+            xAxis: [{
+                type: 'category', //柱状图
+                data: []
+            }],
+            yAxis: [{
+                type: 'value'
+                    //data: [],
+            }],
+            series: [{
+                name: '男',
+                type: 'bar',
+                data: [],
+                itemStyle: {
+                    normal: {
+                        label: {
+                            show: true,
+                            position: 'top'
+                        }
+                    }
+                }
+            }, {
+                name: '女',
+                type: 'bar',
+                data: [],
+                itemStyle: {
+                    normal: {
+                        label: {
+                            show: true,
+                            position: 'top'
+                        }
+                    }
+                }
+            }]
+        });
+        myChart1.showLoading({
+                text: '请您稍等片刻,loading data...',
+                color: 'blue',
+                textColor: 'red',
+                maskColor: 'rgba(160,255,255,0.2)'
+            }),
+            $.get("data/1_data.json").done(function(data) {
+                //var d = JSON.parse(data);
+                var boyList = [];
+                var girlList = [];
+                var specList = [];
+                for (var i = 0; i < data.data.length; i++) {
+                    if (data.data[i].sex == '男') {
+                        boyList.push(data.data[i].value);
+                        specList.push(data.data[i].specName);
+                    } else {
+                        girlList.push(data.data[i].value);
+                    }
+                }
+                myChart1.setOption({
+                    xAxis: {
+                        data: specList
+                    },
+                    yAxis: {},
+                    series: [{
+                        name: '男',
+                        type: 'bar',
+                        data: boyList
+                    }, {
+                        name: '女',
+                        type: 'bar',
+                        data: girlList
+                    }]
+                });
+            });
+        myChart1.hideLoading();
+        //myChart.setOption(option);
+        myChart1.on('click', function(params) {
+            var yt = alert("鼠标点击事件,您刚才单击了:" + params.name);
+            window.open('http://www.baidu.com/s?wd=' + encodeURIComponent(params.name));
+        });
+
+        var myChart2 = echarts.init(document.getElementById("main2"));
+        //myChart.setOption({
+        var data1 = []
+        myChart2.showLoading(),
+            $.get("data/2_data_pie.json", function(data) {
+                console.log("===" + JSON.stringify(data.data_pie))
+                    // data1 = JSON.parse(data),
+                data1 = data.data_pie,
+                    myChart2.setOption({
+                        color: ['red', 'yellow', 'LimeGreen', 'Teal', 'Purple'],
+                        tooltip: { //配置提示框组件
+                            trigger: 'item',
+                            formatter: "{a} <br/>{b} : {c} ({d}%)"
+                        },
+                        title: { //配置标题组件
+                            text: '部分地区非农业人口占比分布情况', //主标题
+                            subtext: '', //次标题
+                            left: 'center'
+                        },
+                        legend: { //配置图例组件
+                            orient: 'vertical',
+                            left: 30,
+                            top: 50,
+                            data: ['北京', '天津', '河北', '山西', '广西']
+                        },
+                        toolbox: { //配置工具箱组件
+                            show: true,
+                            left: 444,
+                            top: 28,
+                            feature: {
+                                mark: {
+                                    show: true
+                                },
+                                dataView: {
+                                    show: true,
+                                    readOnly: false
+                                },
+                                magicType: {
+                                    show: true,
+                                    type: ['pie'],
+                                    option: {
+                                        funnel: {
+                                            x: '25%',
+                                            width: '50%',
+                                            funnelAlign: 'left',
+                                            max: 1548
+                                        }
+                                    }
+                                },
+                                restore: {
+                                    show: true
+                                },
+                                saveAsImage: {
+                                    show: true
+                                }
+                            }
+                        },
+                        calculable: true,
+                        series: [ //配置数据系列组件
+                            {
+                                name: '人口占比',
+                                type: 'pie',
+                                radius: '66%', //半径
+                                //radius: ['45%', '75%'],
+                                center: ['58%', '55%'], //设置圆心
+                                //clockWise: true,
+                                data: data1
+                                    //backgroundColor:'rgba(128,128,128,0.1)',
+                            }
+                        ]
+                    })
+            });
+        //使用刚指定的配置项和数据显示图表
+
+        myChart2.hideLoading();
+        myChart2.on('click', function(params) {
+            var yt = alert("鼠标点击事件,您刚才单击了:" + params.name);
+            window.open('http://www.baidu.com/s?wd=' + encodeURIComponent(params.name));
+        });
+
+        var myChart3 = echarts.init(document.getElementById("main3"));
+        //指定图表的配置项和数据
+        var option3 = { //指定图表的配置项和数据
+            color: ['lightblue', 'yellow', 'green',
+                'rgba(155,200,50,0.5)', 'rgba(44,44,0,0.5)', 'rgba(33,33,30,0.5)',
+                'rgba(255,66,0,0.5)', 'rgba(155,23,31,0.5)'
+            ],
+            //配置标题组件
+            title: {
+                left: 'center',
+                top: 0,
+                textStyle: {
+                    color: 'black'
+                },
+                text: '部分地区20~35岁年龄段分布情况'
+            },
+            //backgroundColor: 'rgba(128, 128, 128, 0.1)', //rgba设置透明度0.1
+            tooltip: {
+                trigger: 'item',
+                formatter: "{a} <br/>{b} : {c} ({d}%)"
+            }, //配置提示框组件
+            toolbox: {
+                show: true,
+                left: 400,
+                top: 28,
+                feature: {
+                    mark: {
+                        show: true
+                    },
+                    dataView: {
+                        show: true,
+                        readOnly: false
+                    },
+                    magicType: {
+                        show: true,
+                        type: ['pie'],
+                        option: {
+                            funnel: {
+                                x: '25%',
+                                width: '50%',
+                                funnelAlign: 'left',
+                                max: 1548
+                            }
+                        }
+                    },
+                    restore: {
+                        show: true
+                    },
+                    saveAsImage: {
+                        show: true
+                    }
+                }
+            },
+            calculable: true,
+            legend: {
+                orient: 'vertical',
+                left: 30,
+                top: 50,
+                data: ['北京', '天津', '河北', '山西', '广西']
+            }, //配置图例组件
+            calculable: true,
+            series: [ //配置数据系列
+                {
+                    name: '部分地区20~35岁年龄段分布情况',
+                    type: 'funnel',
+                    left: '3%',
+                    sort: 'descending', //金字塔:'ascending'; 漏斗图:'descending'
+                    top: 60,
+                    bottom: 60,
+                    width: '80%',
+                    min: 0,
+                    max: 25000000,
+                    minSize: '0%', //每一块的最小宽度
+                    maxSize: '100%', //每一块的最大，一次去除掉尖角
+                    gap: 2, //每一块之间的间隔
+                    label: {
+                        show: true,
+                        position: 'inside'
+                    },
+                    labelLine: {
+                        length: 10, //每一块的名字前面的线的长度
+                        lineStyle: {
+                            width: 1, //每一块的名字前面的线的宽度
+                            type: 'solid' //每一块的名字前面的线的类型
+                        }
+                    },
+                    itemStyle: {
+                        normal: { //图形在正常状态下的样式 
+                            label: {
+                                show: true,
+                                fontSize: 15,
+                                color: 'blue',
+                                position: 'inside',
+                            },
+                            borderColor: '#fff', //每一块的边框颜色
+                            borderWidth: 0, //每一块边框的宽度
+                            shadowBlur: 50, //外面的阴影厚度
+                            shadowOffsetX: 0,
+                            shadowOffsetY: 50, //每一块的x,y轴的阴影
+                            shadowColor: 'white' //阴影颜色
+                        }
+                    },
+                    //鼠标hover时高亮样式
+                    emphasis: {
+                        label: {
+                            fontFamily: "楷体",
+                            color: 'green',
+                            fontSize: 28
+                        }
+                    },
+                    data: [ //在漏斗图中展示的数据 
+                        {
+                            value: 7509419,
+                            name: '北京'
+                        }, {
+                            value: 7283179,
+                            name: '天津'
+                        }, {
+                            value: 7138094,
+                            name: '河北'
+                        }, {
+                            value: 6470342,
+                            name: '山西'
+                        }, {
+                            value: 5667697,
+                            name: '广西'
+                        },
+                    ]
+                }
+            ]
+        };
+        //使用刚指定的配置项和数据显示图表
+        myChart3.setOption(option3);
+        myChart3.on('click', function(params) {
+            var yt = alert("鼠标点击事件,您刚才单击了:" + params.name);
+            window.open('http://www.baidu.com/s?wd=' + encodeURIComponent(params.name));
+        });
+
+        var myChart4 = echarts.init(document.getElementById("main4"));
+        //指定图表的配置项和数据
+        var option4 = {
+            //backgroundColor: '#eee',
+            title: { //配置标题组件
+                text: "部分地区人口受教育情况", //设置主标题
+                textStyle: { //设置主标题文字样式
+                    color: 'black',
+                },
+                x: 'center'
+            },
+            tooltip: { //配置提示框组件
+                trigger: 'axis'
+            },
+            legend: {
+                right: 50, //设置图例左边距
+                top: 22, //设置图例顶边距
+                data: ['未上过学', '小学', '初中', '高中', '大学本科'],
+                left: 'center'
+
+            },
+            xAxis: [ //配置X轴坐标轴
+                {
+                    type: 'category',
+                    data: ['北京', '天津', '河北', '山西', '广西'],
+                }
+            ],
+            yAxis: [ //配置Y轴坐标轴
+                {
+                    type: 'value'
+                }
+            ],
+            toolbox: { //配置工具箱组件
+                show: true, //设置工具箱是否显示
+                x: 555, //设置工具箱的水平位置
+                y: 14, //设置工具箱的垂直位置
+                feature: {
+                    mark: {
+                        show: true
+                    },
+                    dataView: {
+                        show: true,
+                        readOnly: false
+                    },
+                    magicType: {
+                        show: true,
+                        type: ['pie', 'funnel']
+                    },
+                    restore: {
+                        show: true
+                    },
+                    saveAsImage: {
+                        show: true
+                    }
+                }
+            },
+            calculable: false,
+            series: [ //配置数据系列
+                {
+                    name: '未上过学',
+                    type: 'line', //设置指定显示为折线
+                    data: [363770, 312312, 2153698, 868223, 1587939],
+                    smooth: true
+                }, {
+                    name: '小学',
+                    type: 'line',
+                    data: [1952619, 2205954, 1771971, 780486, 1457957],
+                    smooth: true
+                }, {
+                    name: '初中',
+                    type: 'line',
+                    data: [6157444, 4936137, 3190298, 1611528, 1780416],
+                    smooth: true
+                }, {
+                    name: '高中',
+                    type: 'line',
+                    data: [416164, 2671387, 9131670, 5618618, 507815],
+                    smooth: true
+                }, {
+                    name: '大学本科',
+                    type: 'line',
+                    data: [3109069, 1069485, 1813264, 1055226, 955852],
+                    smooth: true
+                },
+            ]
+        };
+        //使用刚指定的配置项和数据显示图表
+        myChart4.setOption(option4);
+        myChart4.on('click', function(params) {
+            var yt = alert("鼠标点击事件,您刚才单击了:" + params.name);
+            window.open('http://www.baidu.com/s?wd=' + encodeURIComponent(params.name));
+        });
+
+        var myChart5 = echarts.init(document.getElementById("main5"));
+        //指定图表的配置项和数据
+        var option5 = { //指定图表的配置项和数据
+            color: ["red", 'blue', 'green', 'Purple', 'yellow'],
+            //backgroundColor: 'rgba(204,204,204,0.7)', //配置背景色，默认无背景
+            title: { //配置标题组件
+                text: '部分地区上半年死亡人口比重',
+                left: 'center',
+                target: 'blank',
+                top: '10',
+                textStyle: {
+                    color: 'black',
+                    fontSize: 18,
+                }
+            },
+            legend: { //配置图例组件
+                show: true, //设置是否显示图例
+                orient: 'vertical', //设置垂直排列
+                left: 30, //设置图例左边距
+                top: 50, // //设置图例距离左侧边距
+                textStyle: {
+                    fontSize: 15,
+                    color: '#fff'
+                }, //设置图例的公用文本样式
+                data: [ //设置图例的数据数组
+                    {
+                        name: '北京',
+                        icon: 'rect',
+                        textStyle: {
+                            color: 'rgba(255,0,0,1)',
+                            fontWeight: 'bold'
+                        }
+                    }, //设置图例项的文本样式
+                    {
+                        name: '天津',
+                        icon: 'rect',
+                        textStyle: {
+                            color: 'rgba(51,0,255,1)',
+                            fontWeight: 'bold'
+                        }
+                    }, {
+                        name: '河北',
+                        icon: 'rect',
+                        textStyle: {
+                            color: 'green',
+                            fontWeight: 'bold'
+                        }
+                    }, {
+                        name: '山西',
+                        icon: 'rect',
+                        textStyle: {
+                            color: 'Purple',
+                            fontWeight: 'bold'
+                        }
+                    }, {
+                        name: '广西',
+                        icon: 'rect',
+                        textStyle: {
+                            color: 'yellow',
+                            fontWeight: 'bold'
+                        }
+                    }
+                ],
+            },
+            tooltip: { //配置详情提示框组件
+                confine: true, //设置是否将tooltip框限制在图表的区域内
+                enterable: true, //设置鼠标是否可以移动到tooltip区域内
+            },
+            radar: [{ //配置雷达图坐标系组件，只适用于雷达图
+                center: ['50%', '56%'], //中心坐标
+                radius: 160, //圆的半径，数组的第一项是内半径，第二项是外半径
+                startAngle: 90, //设置坐标系起始角度，也就是第一个指示器轴的角度
+                name: { //（圆外的标签）雷达图每个指示器名称
+                    formatter: '{value}',
+                    textStyle: {
+                        fontSize: 15,
+                        color: '#000'
+                    }
+                },
+                nameGap: 2, //设置指示器名称和指示器轴的距离，默认为15
+                splitNumber: 2, //设置指示器轴的分割段数，default
+                axisLine: {
+                    lineStyle: {
+                        color: '#fff',
+                        width: 1,
+                        type: 'solid',
+                    }
+                },
+                //设置坐标轴在grid区域中的分隔线
+                splitLine: {
+                    lineStyle: {
+                        color: '#fff',
+                        width: 1,
+                    }
+                },
+                splitArea: {
+                    show: true,
+                    areaStyle: {
+                        color: ['#abc', '#abc', '#abc', '#abc', '#abc']
+                    }
+                }, //设置分隔区域的样式
+                indicator: [ //配置雷达图指示器，指定雷达图中的多个变量，跟data中value对应
+                    {
+                        name: '一月',
+                        max: 50000
+                    }, {
+                        name: '二月',
+                        max: 50000
+                    }, {
+                        name: '三月',
+                        max: 50000
+                    }, {
+                        name: '四月',
+                        max: 50000
+                    }, {
+                        name: '五月',
+                        max: 50000
+                    }
+                ]
+            }],
+            toolbox: { //配置工具箱组件
+                show: true, //设置工具箱组件是否显示
+                left: 444, //设置工具箱左边距
+                top: 28, //设置工具箱顶边距
+                feature: {
+                    mark: {
+                        show: true
+                    },
+                    dataView: {
+                        show: true,
+                        readOnly: false
+                    },
+                    magicType: {
+                        show: true,
+                        type: ['pie'],
+                        option: {
+                            funnel: {
+                                x: '25%',
+                                width: '50%',
+                                funnelAlign: 'left',
+                                max: 1548
+                            }
+                        }
+                    },
+                    restore: {
+                        show: true
+                    },
+                    saveAsImage: {
+                        show: true
+                    }
+                }
+            },
+            calculable: true,
+            series: [{
+                name: '雷达图', //tooltip的显示
+                type: 'radar', //系列类型: 雷达图
+                symbol: 'triangle',
+                itemStyle: { //设置折线拐点标志的样式
+                    normal: {
+                        lineStyle: {
+                            width: 1
+                        },
+                        opacity: 0.2
+                    }, //设置普通状态时的样式
+                    emphasis: {
+                        lineStyle: {
+                            width: 5
+                        },
+                        opacity: 1
+                    } //设置高亮时的样式
+                },
+                data: [ //设置雷达图的数据是多变量(维度)
+                    { //数据项
+                        name: '北京',
+                        value: [6611, 5868, 6313, 6244, 6229], //value是具体数据
+                        symbol: 'triangle',
+                        symbolSize: 5, //设置单个数据标记的大小
+                        //设置拐点标志样式
+                        itemStyle: {
+                            normal: {
+                                borderColor: 'blue',
+                                borderWidth: 3
+                            }
+                        },
+                        //设置单项线条样式
+                        lineStyle: {
+                            normal: {
+                                color: 'red',
+                                width: 1,
+                                opacity: 0.9
+                            }
+                        },
+
+                    }, {
+                        name: '天津',
+                        value: [4709, 4053, 4501, 4603, 4415],
+                        symbol: 'circle',
+                        symbolSize: 5, //设置单个数据标记的大小
+                        itemStyle: {
+                            normal: {
+                                borderColor: 'rgba(51,0,255,1)',
+                                borderWidth: 3,
+                            }
+                        },
+                        lineStyle: {
+                            normal: {
+                                color: 'blue',
+                                width: 1,
+                                opacity: 0.9
+                            }
+                        },
+                    }, {
+                        name: '河北',
+                        value: [40964, 41157, 41751, 35433, 35078],
+                        symbol: 'arrow',
+                        symbolSize: 5,
+                        itemStyle: {
+                            normal: {
+                                borderColor: 'rgba(0,0,0,1)',
+                                borderWidth: 3,
+                            }
+                        },
+                        lineStyle: {
+                            normal: {
+                                color: 'green',
+                                width: 1,
+                                opacity: 0.9
+                            }
+                        },
+
+                    }, {
+                        name: '山西',
+                        value: [14854, 17097, 18860, 16518, 15955],
+                        symbol: 'arrow',
+                        symbolSize: 5,
+                        itemStyle: {
+                            normal: {
+                                borderColor: 'rgba(0,0,0,1)',
+                                borderWidth: 3,
+                            }
+                        },
+                        lineStyle: {
+                            normal: {
+                                color: 'Purple',
+                                width: 1,
+                                opacity: 0.9
+                            }
+                        },
+
+                    }, {
+                        name: '广西',
+                        value: [16185, 19468, 21997, 20746, 21805],
+                        symbol: 'arrow',
+                        symbolSize: 5,
+                        itemStyle: {
+                            normal: {
+                                borderColor: 'rgba(0,0,0,1)',
+                                borderWidth: 3,
+                            }
+                        },
+                        lineStyle: {
+                            normal: {
+                                color: 'yellow',
+                                width: 1,
+                                opacity: 0.9
+                            }
+                        },
+
+                    }
+                ]
+            }, ]
+        };
+        //使用刚指定的配置项和数据显示图表
+        myChart5.setOption(option5);
+        myChart5.on('click', function(params) {
+            var yt = alert("鼠标点击事件,您刚才单击了:" + params.name);
+            window.open('http://www.baidu.com/s?wd=' + encodeURIComponent(params.name));
+        });
+
+        var myChart6 = echarts3.init(document.getElementById('main6'));
+        var keywords = [{
+            "name": "北京",
+            "value": 120
+        }, {
+            "name": "天津",
+            "value": 90
+        }, {
+            "name": "河北",
+            "value": 130
+        }, {
+            "name": "山西",
+            "value": 95
+        }, {
+            "name": "广西",
+            "value": 150
+        }, {
+            "name": "河南",
+            "value": 95
+        }, {
+            "name": "湖南",
+            "value": 100
+        }, {
+            "name": "湖北",
+            "value": 80
+        }, {
+            "name": "山东",
+            "value": 110
+        }]
+        var option6 = {
+            backgroundColor: 'pink', //设置背景色
+            series: [{
+                type: 'wordCloud',
+                sizeRange: [15, 80],
+                rotationRange: [0, 0],
+                rotationStep: 45,
+                gridSize: 8,
+                shape: 'pentagon',
+                width: '80%',
+                height: '80%',
+                textStyle: {
+                    normal: {
+                        color: function() {
+                            return 'rgb(' + [
+                                Math.round(Math.random() * 160),
+                                Math.round(Math.random() * 160),
+                                Math.round(Math.random() * 160)
+                            ].join(',') + ')';
+                        }
+                    }
+                },
+
+                data: keywords
+            }]
+        };
+        myChart6.setOption(option6);
+        window.addEventListener("resize", function() {
+            myChart6.resize()
+        });
+        myChart6.on('click', function(params) {
+            var yt = alert("鼠标点击事件,您刚才单击了:" + params.name);
+            window.open('http://www.baidu.com/s?wd=' + encodeURIComponent(params.name));
+        });
+
+
+
+        // 控制联动的
+        myChart1.group = 'group1';
+        myChart2.group = 'group1';
+        myChart3.group = 'group2';
+        myChart4.group = 'group2';
+        myChart5.group = 'group2';
+        //myChart6.group = 'group1';
+        echarts.connect('group1');
+        echarts.connect('group2');
+        //echarts.connect([myChart1, myChart2, myChart3,myChart4,myChart5,myChart6]);
+    </script>
+</body>
+
+</html>
